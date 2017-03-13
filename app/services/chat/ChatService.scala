@@ -11,7 +11,7 @@ class ChatService @Inject()(
   /**
    * Get or create chat room and join.
    */
-  def start(roomId: String, userName: String) = repository.streamChatRoom(roomId).channel
+  def start(roomId: String, userName: String) = repository.chatRoom(roomId).channel
 
 }
 

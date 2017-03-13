@@ -2,6 +2,6 @@ package domains.chat
 
 trait ChatRoomRepository {
 
-  def streamChatRoom(roomId: String): ChatRoom
+  def chatRoom(roomId: String): ChatRoom
 
 }

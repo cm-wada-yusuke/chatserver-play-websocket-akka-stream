@@ -1,12 +1,11 @@
 package infrastructure.chat
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.Inject
 
 import akka.actor.ActorSystem
-import akka.stream.{ ActorMaterializer, KillSwitches, Materializer, UniqueKillSwitch }
-import akka.stream.scaladsl.{ BroadcastHub, Flow, Keep, MergeHub, Sink, Source }
-import domains.chat.{ ChatMessage, ChatRoom, Join, ChatRoomRepository }
-import play.api.libs.streams.ActorFlow
+import akka.stream.scaladsl.{ BroadcastHub, Flow, Keep, MergeHub, Sink }
+import akka.stream.{ KillSwitches, Materializer, UniqueKillSwitch }
+import domains.chat.{ ChatMessage, ChatRoom, ChatRoomRepository }
 
 import scala.concurrent.duration._
 
@@ -20,7 +19,7 @@ class ChatRoomClient @Inject()(
 
   import ChatRoomClient._
 
-  override def streamChatRoom(roomId: String): ChatRoom =
+  override def chatRoom(roomId: String): ChatRoom = synchronized {
     roomPool.get(roomId) match {
       case Some(room) =>
         room
@@ -29,6 +28,7 @@ class ChatRoomClient @Inject()(
         roomPool += (roomId -> room)
         room
     }
+  }
 
   private def create(roomId: String): ChatRoom = {
 

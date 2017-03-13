@@ -7,7 +7,7 @@ import domains.chat.{ Join, Leave, Talk }
 /**
  * Convert output Message to WebSocket output String.
  */
-class ChatResponseConvertActor(out: ActorRef) extends Actor {
+class ChatResponseActor(out: ActorRef) extends Actor {
 
 
   /**
@@ -26,6 +26,6 @@ class ChatResponseConvertActor(out: ActorRef) extends Actor {
 
 }
 
-object ChatResponseConvertActor {
-  def props(out: ActorRef): Props = Props(new ChatResponseConvertActor(out))
+object ChatResponseActor {
+  def props(out: ActorRef): Props = Props(new ChatResponseActor(out))
 }

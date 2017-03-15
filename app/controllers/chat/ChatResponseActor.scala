@@ -1,13 +1,13 @@
 package controllers.chat
 
 
-import akka.actor.{ Actor, ActorRef, Props }
+import akka.actor.{ Actor, ActorRef, PoisonPill, Props }
 import domains.chat.{ Join, Leave, Talk }
 
 /**
  * Convert output Message to WebSocket output String.
  */
-class ChatResponseActor(out: ActorRef) extends Actor {
+class ChatResponseActor(out: ActorRef, me: String) extends Actor {
 
 
   /**
@@ -20,6 +20,10 @@ class ChatResponseActor(out: ActorRef) extends Actor {
       out ! s"$userName : joined."
     case Leave(userName) =>
       out ! s"$userName left."
+      if(userName == me) {
+        out ! PoisonPill
+        self ! PoisonPill
+      }
   }
 
   override def postStop(): Unit = super.postStop()
@@ -27,5 +31,5 @@ class ChatResponseActor(out: ActorRef) extends Actor {
 }
 
 object ChatResponseActor {
-  def props(out: ActorRef): Props = Props(new ChatResponseActor(out))
+  def props(out: ActorRef, me : String): Props = Props(new ChatResponseActor(out, me))
 }

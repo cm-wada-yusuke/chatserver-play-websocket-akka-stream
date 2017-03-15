@@ -2,7 +2,7 @@ package services.chat
 
 import javax.inject.Inject
 
-import domains.chat.ChatRoomRepository
+import domains.chat.{ ChatRoom, ChatRoomRepository }
 
 class ChatService @Inject()(
     repository: ChatRoomRepository
@@ -11,7 +11,6 @@ class ChatService @Inject()(
   /**
    * Get or create chat room and join.
    */
-  def start(roomId: String, userName: String) = repository.chatRoom(roomId).channel
-
+  def start(roomId: String, userName: String): ChatRoom = repository.chatRoom(roomId, userName)
 }
 

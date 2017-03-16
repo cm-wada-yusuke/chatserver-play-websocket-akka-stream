@@ -23,8 +23,9 @@ class ChatController @Inject()(
 
 
     val userName = request.queryString("user_name").headOption.getOrElse("anon")
+
+    val userInput: Flow[String, ChatMessage, _] = ActorFlow.actorRef[String, ChatMessage](out => ChatRequestActor.props(out, userName))
     val room = streamChatService.start(roomId, userName)
-    val userInput: Flow[String, ChatMessage, _] = ActorFlow.actorRef[String, ChatMessage](out => ChatRequestActor.props(out, userName, room))
     val userOutPut: Flow[ChatMessage, String, _] = ActorFlow.actorRef[ChatMessage, String](out => ChatResponseActor.props(out,userName))
 
     userInput.viaMat(room.bus)(Keep.right).viaMat(userOutPut)(Keep.right)

@@ -2,25 +2,27 @@ package controllers.chat
 
 
 import akka.actor.{ Actor, ActorRef, PoisonPill, Props }
-import domains.chat.{ Join, Leave, Talk }
+import domains.chat.{ Chat, Join, Leave, Talk }
+import play.api.libs.json.Json
 
 /**
  * Convert output Message to WebSocket output String.
  */
 class ChatResponseActor(out: ActorRef, me: String) extends Actor {
 
+  import ChatMessageConverters._
 
   /**
    * If you want to serialize to json, define json converter here.
    */
   override def receive: Receive = {
-    case Talk(userName, msg) =>
-      out ! s"$userName : $msg"
-    case Join(userName) =>
-      out ! s"$userName : joined."
+    case Talk(u, t) =>
+      out ! Json.toJson(Chat(u, t, false))
+    case Join(u) =>
+      out ! Json.toJson(Chat(u, "joined.", true))
     case Leave(userName) =>
-      out ! s"$userName left."
-      if(userName == me) {
+      out ! Json.toJson(Chat(userName, "joined.", true))
+      if (userName == me) {
         out ! PoisonPill
         self ! PoisonPill
       }
@@ -31,5 +33,5 @@ class ChatResponseActor(out: ActorRef, me: String) extends Actor {
 }
 
 object ChatResponseActor {
-  def props(out: ActorRef, me : String): Props = Props(new ChatResponseActor(out, me))
+  def props(out: ActorRef, me: String): Props = Props(new ChatResponseActor(out, me))
 }

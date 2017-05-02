@@ -21,7 +21,7 @@ class ChatResponseActor(out: ActorRef, me: String) extends Actor {
     case Join(u) =>
       out ! Json.toJson(Chat(u, "joined.", true))
     case Leave(userName) =>
-      out ! Json.toJson(Chat(userName, "joined.", true))
+      out ! Json.toJson(Chat(userName, "left.", true))
       if (userName == me) {
         out ! PoisonPill
         self ! PoisonPill
